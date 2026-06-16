@@ -24,7 +24,7 @@ constexpr const frame_size_entry_t frame_sizes[] = {
     {"SXGA (1280x1024)", FRAMESIZE_SXGA},
     {"UXGA (1600x1200)", FRAMESIZE_UXGA}};
 
-const framesize_t lookup_frame_size(const char *pin)
+inline const framesize_t lookup_frame_size(const char *pin)
 {
     // Lookup table for the frame name to framesize_t
     for (const auto &entry : frame_sizes)
@@ -32,4 +32,20 @@ const framesize_t lookup_frame_size(const char *pin)
             return entry.frame_size;
 
     return FRAMESIZE_INVALID;
+}
+
+inline bool is_high_resolution_frame(framesize_t size)
+{
+    return size >= FRAMESIZE_SVGA;
+}
+
+inline unsigned long recommended_frame_duration_ms(framesize_t size)
+{
+    if (size >= FRAMESIZE_XGA)
+        return 666;
+    if (size >= FRAMESIZE_SVGA)
+        return 500;
+    if (size >= FRAMESIZE_VGA)
+        return 200;
+    return 100;
 }

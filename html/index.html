@@ -157,7 +157,10 @@
 
     {{#NetworkState.ApMode}}
     <div class="alert alert-warning">
-        <h3 class="text-center">Not connected to an access point.<br>Consider configuring the access point.</h3>
+        <h3 class="text-center">Not connected to your WiFi.<br>Use <a href="config">/config</a> to set 2.4 GHz WPA2 network.</h3>
+        <p class="text-center"><b>Saved SSID:</b> {{SavedWifiSsid}}<br>
+        <b>Last error:</b> {{LastWifiError}}<br>
+        <small>After saving WiFi the device restarts automatically. Needs <a href="update">firmware update</a> if that does not happen.</small></p>
     </div>
     {{/NetworkState.ApMode}}
 
@@ -170,7 +173,7 @@
     <h2 class="text-center">Camera</h2>
     <div class="flex-table">
         <div class="row">Frame rate:</div>
-        <div>{{FrameDuration}} ms ({{FrameFrequency}} f/s)</div>
+        <div>{{FrameDuration}} ms configured (effective {{EffectiveFrameMs}} ms, {{FrameFrequency}} f/s)</div>
         <div class="row">Frame size:</div>
         <div>{{FrameSize}}</div>
         <div class="row">JPEG quality:</div>
@@ -215,6 +218,8 @@
         <div>{{#HMirror}}Mirrored{{/HMirror}}{{^HMirror}}Normal{{/HMirror}}</div>
         <div class="row">Vertical flip:</div>
         <div>{{#VFlip}}Flipped{{/VFlip}}{{^VFlip}}Normal{{/VFlip}}</div>
+        <div class="row">Rotation:</div>
+        <div>{{Rotation}}</div>
         <div class="row">Downsize enable:</div>
         <div>{{#Dcw}}Enabled{{/Dcw}}{{^Dcw}}Disabled{{/Dcw}}</div>
         <div class="row">Color bar:</div>
@@ -225,6 +230,22 @@
     <div class="alert alert-success">
         <h3 class="text-center">Camera was initialized successfully!</h3>
     </div>
+    <h2 class="text-center">Live preview</h2>
+    <div class="text-center" style="margin-bottom: 20px;">
+        <img id="liveview" src="/snapshot" alt="Camera preview" style="max-width: 100%; height: auto; border: 1px solid #ccc; transform: rotate({{PreviewRotationDegrees}}deg); transform-origin: center center;">
+        <p><small>Browser preview (~{{FrameFrequency}} FPS). Paused automatically while RTSP/Frigate is streaming.</small></p>
+    </div>
+    <script>
+        (function () {
+            var rtspStreaming = {{NumRTSPStreaming}} > 0;
+            if (rtspStreaming) return;
+            var intervalMs = {{BrowserPreviewMs}};
+            if (intervalMs < 100) intervalMs = 200;
+            setInterval(function () {
+                document.getElementById('liveview').src = '/snapshot?t=' + Date.now();
+            }, intervalMs);
+        })();
+    </script>
     {{/CameraInitialized}}
     {{^CameraInitialized}}
     <div class="alert alert-danger">
@@ -241,12 +262,18 @@
     <div class="flex-table">
         <div class="row">RTSP camera stream:</div>
         <div><a href="rtsp://{{IPv4}}:{{RtspPort}}/mjpeg/1">rtsp://{{IPv4}}:{{RtspPort}}/mjpeg/1</a></div>
-        <div class="row">JPEG Motion stream:</div>
+        <div class="row">MJPEG stream (VLC, not Chrome):</div>
         <div><a href="http://{{IPv4}}/stream" target="_blank" rel="noopener">http://{{IPv4}}/stream</a></div>
         <div class="row">Snapshot of the camera:</div>
         <div><a href="http://{{IPv4}}/snapshot " target="_blank" rel="noopener">http://{{IPv4}}/snapshot</a> </div>
         <div class="row">Restart the board:</div>
-        <div><a href="http://{{IPv4}}/restart " target="_blank" rel="noopener">http://{{IPv4}}/restart</a> </div>
+        <div><a href="http://{{IPv4}}/restart" target="_blank" rel="noopener">http://{{IPv4}}/restart</a></div>
+        <div class="row">Reset WiFi (open hotspot):</div>
+        <div><a href="http://{{IPv4}}/wifi-reset" target="_blank" rel="noopener">http://{{IPv4}}/wifi-reset</a></div>
+        <div class="row">Retry WiFi (restart):</div>
+        <div><a href="http://{{IPv4}}/wifi-reconnect" target="_blank" rel="noopener">http://{{IPv4}}/wifi-reconnect</a></div>
+        <div class="row">Firmware update (web):</div>
+        <div><a href="http://{{IPv4}}/update" target="_blank" rel="noopener">http://{{IPv4}}/update</a></div>
     </div>
 
 </body>

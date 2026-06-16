@@ -13,7 +13,8 @@
 
 #define DEFAULT_FRAME_DURATION 200
 #define DEFAULT_FRAME_SIZE "VGA (640x480)"
-#define DEFAULT_JPEG_QUALITY (psramFound() ? 12 : 14)
+// esp_camera JPEG quality is 0-63 (lower = better).
+#define DEFAULT_JPEG_QUALITY (psramFound() ? 12 : 16)
 
 #define DEFAULT_BRIGHTNESS 0
 #define DEFAULT_CONTRAST 0
@@ -37,5 +38,9 @@
 #define DEFAULT_VERTICAL_MIRROR false
 #define DEFAULT_DCW true
 #define DEFAULT_COLORBAR false
+
+#define DEFAULT_ROTATION "Normal (0°)"
+
+#define DEFAULT_STATUS_LED_BLINK true
 
 #define DEFAULT_LED_INTENSITY 0
